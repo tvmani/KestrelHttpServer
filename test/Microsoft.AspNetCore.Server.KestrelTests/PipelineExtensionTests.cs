@@ -32,14 +32,14 @@ namespace Microsoft.AspNetCore.Server.KestrelTests
         [InlineData(ulong.MinValue)]
         [InlineData(ulong.MaxValue)]
         [InlineData(4_8_15_16_23_42)]
-        public async Task WritesNumericToAscii(ulong number)
+        public void WritesNumericToAscii(ulong number)
         {
             var writerBuffer = _pipe.Writer.Alloc();
             var writer = new WritableBufferWriter(writerBuffer);
             PipelineExtensions.WriteNumeric(ref writer, number);
-            await writerBuffer.FlushAsync();
+            writerBuffer.FlushAsync().GetAwaiter().GetResult();
 
-            var reader = await _pipe.Reader.ReadAsync();
+            var reader = _pipe.Reader.ReadAsync().GetAwaiter().GetResult();
             var numAsStr = number.ToString();
             var expected = Encoding.ASCII.GetBytes(numAsStr);
             AssertExtensions.Equal(expected, reader.Buffer.Slice(0, numAsStr.Length).ToArray());
@@ -80,13 +80,13 @@ namespace Microsoft.AspNetCore.Server.KestrelTests
         // null or empty
         [InlineData("", new byte[0])]
         [InlineData(null, new byte[0])]
-        public async Task EncodesAsAscii(string input, byte[] expected)
+        public void EncodesAsAscii(string input, byte[] expected)
         {
             var writerBuffer = _pipe.Writer.Alloc();
             var writer = new WritableBufferWriter(writerBuffer);
             PipelineExtensions.WriteAsciiNoValidation(ref writer, input);
-            await writerBuffer.FlushAsync();
-            var reader = await _pipe.Reader.ReadAsync();
+            writerBuffer.FlushAsync().GetAwaiter().GetResult();
+            var reader = _pipe.Reader.ReadAsync().GetAwaiter().GetResult();
 
             if (expected.Length > 0)
             {
@@ -105,21 +105,21 @@ namespace Microsoft.AspNetCore.Server.KestrelTests
         [InlineData("𤭢𐐝")]
         // non-ascii characters stored in 16 bits
         [InlineData("ñ٢⛄⛵")]
-        public async Task WriteAsciiNoValidationWritesOnlyOneBytePerChar(string input)
+        public void WriteAsciiNoValidationWritesOnlyOneBytePerChar(string input)
         {
             // WriteAscii doesn't validate if characters are in the ASCII range
             // but it shouldn't produce more than one byte per character
             var writerBuffer = _pipe.Writer.Alloc();
             var writer = new WritableBufferWriter(writerBuffer);
             PipelineExtensions.WriteAsciiNoValidation(ref writer, input);
-            await writerBuffer.FlushAsync();
-            var reader = await _pipe.Reader.ReadAsync();
+            writerBuffer.FlushAsync().GetAwaiter().GetResult();
+            var reader = _pipe.Reader.ReadAsync().GetAwaiter().GetResult();
 
             Assert.Equal(input.Length, reader.Buffer.Length);
         }
 
         [Fact]
-        public async Task WriteAsciiNoValidation()
+        public void WriteAsciiNoValidation()
         {
             const byte maxAscii = 0x7f;
             var writerBuffer = _pipe.Writer.Alloc();
@@ -128,9 +128,9 @@ namespace Microsoft.AspNetCore.Server.KestrelTests
             {
                 PipelineExtensions.WriteAsciiNoValidation(ref writer, new string((char)i, 1));
             }
-            await writerBuffer.FlushAsync();
+            writerBuffer.FlushAsync().GetAwaiter().GetResult();
 
-            var reader = await _pipe.Reader.ReadAsync();
+            var reader = _pipe.Reader.ReadAsync().GetAwaiter().GetResult();
             var data = reader.Buffer.Slice(0, maxAscii).ToArray();
             for (var i = 0; i < maxAscii; i++)
             {
