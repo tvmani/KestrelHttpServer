@@ -24,23 +24,9 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Internal.Infrastructure
         // - A stop event's event id must be next one after its start event.
         // - Avoid renaming methods or parameters marked with EventAttribute. EventSource uses these to form the event object.
 
-        [NonEvent]
-        public void ConnectionStart(Connection connection)
-        {
-            // avoid allocating strings unless this event source is enabled
-            if (IsEnabled())
-            {
-                ConnectionStart(
-                    connection.ConnectionId,
-                    connection.ListenerContext.ListenOptions.Scheme,
-                    connection.LocalEndPoint.ToString(),
-                    connection.RemoteEndPoint.ToString());
-            }
-        }
-
         [MethodImpl(MethodImplOptions.NoInlining)]
         [Event(1, Level = EventLevel.Verbose)]
-        private void ConnectionStart(string connectionId,
+        public void ConnectionStart(string connectionId,
             string scheme,
             string localEndPoint,
             string remoteEndPoint)
@@ -54,20 +40,45 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Internal.Infrastructure
             );
         }
 
-        [NonEvent]
-        public void ConnectionStop(Connection connection)
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        [Event(2, Level = EventLevel.Verbose)]
+        public void ConnectionStop(string connectionId)
         {
+            WriteEvent(2, connectionId);
+        }
+
+        [NonEvent]
+        public void RequestStart(Frame frame)
+        {
+            // avoid allocating the trace identifier unless logging is enabled
             if (IsEnabled())
             {
-                ConnectionStop(connection.ConnectionId);
+                RequestStart(frame.ConnectionIdFeature, frame.TraceIdentifier);
+            }
+        }
+
+        [NonEvent]
+        public void RequestStop(Frame frame)
+        {
+            // avoid allocating the trace identifier unless logging is enabled
+            if (IsEnabled())
+            {
+                RequestStop(frame.ConnectionIdFeature, frame.TraceIdentifier);
             }
         }
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        [Event(2, Level = EventLevel.Verbose)]
-        private void ConnectionStop(string connectionId)
+        [Event(3, Level = EventLevel.Verbose)]
+        private void RequestStart(string connectionId, string requestId)
         {
-            WriteEvent(2, connectionId);
+            WriteEvent(3, connectionId, requestId);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        [Event(4, Level = EventLevel.Verbose)]
+        private void RequestStop(string connectionId, string requestId)
+        {
+            WriteEvent(4, connectionId, requestId);
         }
     }
 }
