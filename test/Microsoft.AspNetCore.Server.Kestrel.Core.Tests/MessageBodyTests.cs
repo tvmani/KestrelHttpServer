@@ -32,7 +32,7 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Tests
                 var stream = new FrameRequestStream();
                 stream.StartAcceptingReads(body);
 
-                input.Add("Hello", true);
+                input.Add("Hello");
 
                 var buffer1 = new byte[1024];
                 var count1 = stream.Read(buffer1, 0, 1024);
@@ -53,7 +53,7 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Tests
                 var stream = new FrameRequestStream();
                 stream.StartAcceptingReads(body);
 
-                input.Add("Hello", true);
+                input.Add("Hello");
 
                 var buffer1 = new byte[1024];
                 var count1 = await stream.ReadAsync(buffer1, 0, 1024);
@@ -74,7 +74,7 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Tests
                 var stream = new FrameRequestStream();
                 stream.StartAcceptingReads(body);
 
-                input.Add("Hello", true);
+                input.Add("Hello");
 
                 var buffer1 = new byte[1024];
                 Assert.Equal(0, stream.Read(buffer1, 0, 1024));
@@ -90,7 +90,7 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Tests
                 var stream = new FrameRequestStream();
                 stream.StartAcceptingReads(body);
 
-                input.Add("Hello", true);
+                input.Add("Hello");
 
                 var buffer1 = new byte[1024];
                 Assert.Equal(0, await stream.ReadAsync(buffer1, 0, 1024));
@@ -106,7 +106,7 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Tests
                 var stream = new FrameRequestStream();
                 stream.StartAcceptingReads(body);
 
-                input.Add("Hello", true);
+                input.Add("Hello");
 
                 var buffer1 = new byte[1024];
                 Assert.Equal(0, stream.Read(buffer1, 0, 1024));
@@ -122,7 +122,7 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Tests
                 var stream = new FrameRequestStream();
                 stream.StartAcceptingReads(body);
 
-                input.Add("Hello", true);
+                input.Add("Hello");
 
                 var buffer1 = new byte[1024];
                 Assert.Equal(0, await stream.ReadAsync(buffer1, 0, 1024));
@@ -138,7 +138,7 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Tests
                 var stream = new FrameRequestStream();
                 stream.StartAcceptingReads(body);
 
-                input.Add("Hello", true);
+                input.Add("Hello");
 
                 var buffer1 = new byte[1024];
                 Assert.Equal(0, stream.Read(buffer1, 0, 1024));
@@ -154,7 +154,7 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Tests
                 var stream = new FrameRequestStream();
                 stream.StartAcceptingReads(body);
 
-                input.Add("Hello", true);
+                input.Add("Hello");
 
                 var buffer1 = new byte[1024];
                 Assert.Equal(0, await stream.ReadAsync(buffer1, 0, 1024));
@@ -176,7 +176,7 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Tests
                 input.Add(largeInput);
                 // Add a smaller block to the end so that SocketInput attempts to return the large
                 // block to the memory pool.
-                input.Add("Hello", fin: true);
+                input.Add("Hello");
 
                 var ms = new MemoryStream();
 
@@ -324,7 +324,7 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Tests
 
                 await Assert.ThrowsAsync<XunitException>(() => body.CopyToAsync(writeStream));
 
-                input.Add(data[1], fin: headers.HeaderConnection == "close");
+                input.Add(data[1]);
 
                 // "Hello " should have been consumed
                 var readBuffer = new byte[6];
@@ -350,7 +350,7 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Tests
                 var stream = new FrameRequestStream();
                 stream.StartAcceptingReads(body);
 
-                input.Add("Hello", true);
+                input.Add("Hello");
 
                 var buffer = new byte[1024];
                 Assert.Equal(5, stream.Read(buffer, 0, 1024));

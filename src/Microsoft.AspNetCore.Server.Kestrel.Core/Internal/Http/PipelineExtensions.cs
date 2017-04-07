@@ -56,14 +56,15 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http
 
                 try
                 {
+                    if (result.IsCompleted)
+                    {
+                        return default(ArraySegment<byte>);
+                    }
+
                     if (!result.Buffer.IsEmpty)
                     {
                         var segment = result.Buffer.First;
                         return segment.GetArray();
-                    }
-                    else if (result.IsCompleted)
-                    {
-                        return default(ArraySegment<byte>);
                     }
                 }
                 finally

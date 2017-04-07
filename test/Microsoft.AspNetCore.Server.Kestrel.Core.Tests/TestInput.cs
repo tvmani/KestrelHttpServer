@@ -35,14 +35,10 @@ namespace Microsoft.AspNetCore.Server.Kestrel.Core.Tests
 
         public Frame FrameContext { get; set; }
 
-        public void Add(string text, bool fin = false)
+        public void Add(string text)
         {
             var data = Encoding.ASCII.GetBytes(text);
             Pipe.Writer.WriteAsync(data).Wait();
-            if (fin)
-            {
-                Pipe.Writer.Complete();
-            }
         }
 
         public void ProduceContinue()
